@@ -1,6 +1,6 @@
 using CollabDocumentEditor.Core.Entities;
 
-namespace CollabDocumentEditor.Core.Interfaces;
+namespace CollabDocumentEditor.Core.Interfaces.Repositories;
 
 public interface IDocumentRepository
 {

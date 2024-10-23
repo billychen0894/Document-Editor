@@ -1,6 +1,6 @@
 using CollabDocumentEditor.Core.Dtos;
 
-namespace CollabDocumentEditor.Core.Interfaces;
+namespace CollabDocumentEditor.Core.Interfaces.Services;
 
 public interface IDocumentService
 {
