@@ -1,5 +1,7 @@
 using AutoMapper;
 using CollabDocumentEditor.Core.Dtos;
+using CollabDocumentEditor.Core.Dtos.AuthDtos;
+using CollabDocumentEditor.Core.Entities;
 using Document = CollabDocumentEditor.Core.Entities.Document;
 
 namespace CollabDocumentEditor.Infrastructure.Mapping;
@@ -21,5 +23,12 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) =>
                 srcMember != null));
+        
+        // RegisterDto -> ApplicationUser
+        CreateMap<RegisterDto, ApplicationUser>()
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+            .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName));
     }
 }
