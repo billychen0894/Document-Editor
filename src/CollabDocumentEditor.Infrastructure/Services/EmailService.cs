@@ -102,7 +102,7 @@ public class EmailService : IEmailService
    {
       try
       {
-         var template = EmailTemplates.ConfirmEmail(callbackUrl);
+         var template = EmailTemplates.ConfirmEmail($"{_emailSettings.Host}{callbackUrl}");
 
          var msg = new SendGridMessage
          {
@@ -142,7 +142,7 @@ public class EmailService : IEmailService
    {
       try
       {
-         var template = EmailTemplates.ResetPassword(callbackUrl);
+         var template = EmailTemplates.ResetPassword($"{_emailSettings.Host}{callbackUrl}");
 
          var msg = new SendGridMessage
          {
