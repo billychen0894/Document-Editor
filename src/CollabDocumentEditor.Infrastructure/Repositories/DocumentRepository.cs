@@ -93,7 +93,6 @@ public class DocumentRepository : IDocumentRepository
             }
             
             _context.Entry(existingDocument).CurrentValues.SetValues(document);
-            existingDocument.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
             return existingDocument;
