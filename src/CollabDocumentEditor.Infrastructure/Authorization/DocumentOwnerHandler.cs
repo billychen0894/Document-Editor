@@ -14,7 +14,7 @@ public class DocumentOwnerHandler : AuthorizationHandler<DocumentOwnerRequiremen
 
       if (user.Identity?.IsAuthenticated != true) return Task.CompletedTask;
 
-      if (document.UserId == user.FindFirst(ClaimTypes.NameIdentifier)?.Value)
+      if (document.UserId == user.FindFirst(ClaimTypes.NameIdentifier)?.Value || context.User.IsInRole("Admin"))
       {
         context.Succeed(requirement); 
       }
