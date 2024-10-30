@@ -6,7 +6,6 @@ using CollabDocumentEditor.Core.Validators.AuthValidators;
 using CollabDocumentEditor.Infrastructure.Authorization;
 using CollabDocumentEditor.Infrastructure.Data;
 using CollabDocumentEditor.Infrastructure.Extensions;
-using CollabDocumentEditor.Infrastructure.HealthChecks;
 using CollabDocumentEditor.Infrastructure.Mapping;
 using CollabDocumentEditor.Infrastructure.Services;
 using FluentValidation;
@@ -52,9 +51,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<IAuthorizationHandler, DocumentOwnerHandler>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
