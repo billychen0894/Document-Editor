@@ -16,7 +16,8 @@ public class MappingProfile : Profile
         // CreateDocumentDto -> Document
         CreateMap<CreateDocumentDto, Document>()
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.UserId, opt => opt.Ignore());
 
         // UpdateDocumentDto -> Document
         CreateMap<UpdateDocumentDto, Document>()
