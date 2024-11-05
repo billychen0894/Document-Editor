@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CollabDocumentEditor.Core.Entities;
 
-public class ApplicationUser : IdentityUser
+public class ApplicationUser : IdentityUser<Guid>
 {
     // Custom properties
     public string FirstName { get; set; }

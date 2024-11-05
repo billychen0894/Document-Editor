@@ -27,7 +27,8 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
            .IsRequired();
        
        builder.HasIndex(d => d.UserId);
-       builder.HasIndex(d => d.CreatedAt);
+       builder.HasIndex(d => d.CreatedAt).IsDescending();
+       builder.HasIndex(d => d.Title);
 
        // One-to-Many relationship: one user can have many documents
        builder.HasOne(d => d.User)
