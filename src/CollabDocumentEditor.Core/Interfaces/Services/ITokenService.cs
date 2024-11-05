@@ -13,5 +13,5 @@ public interface ITokenService
     Task<TokenValidationResult> ValidateRefreshTokenAsync(string accessToken, string refreshToken);
     Task<AuthResult> RefreshTokenAsync(string accessToken, string refreshToken);
     ClaimsPrincipal? GetPrincipalFromToken(string token);
-    Task<bool> RevokeTokenAsync(string userId);
+    Task<bool> RevokeTokenAsync(Guid userId);
 } 

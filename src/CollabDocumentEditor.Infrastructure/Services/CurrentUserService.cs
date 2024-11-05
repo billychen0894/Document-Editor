@@ -30,7 +30,10 @@ public class CurrentUserService : ICurrentUserService
                     throw new UnauthorizedAccessException("User is not authenticated");
                 }
 
-                if (Guid.TryParse(userIdClaim, out var userId)) return userId;
+                if (Guid.TryParse(userIdClaim, out var userId))
+                {
+                    return userId;
+                }
                
                 _logger.LogError("Invalid user ID format in claims: {UserIdClaim}", userIdClaim);
                 throw new InvalidOperationException("Invalid user ID format in claims");

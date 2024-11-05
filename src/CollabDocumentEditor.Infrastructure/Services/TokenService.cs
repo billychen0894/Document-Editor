@@ -26,7 +26,7 @@ public class TokenService : ITokenService
 
     public TokenService(IOptions<JwtSettings> jwtSettingsOptions, UserManager<ApplicationUser> userManager, ILogger<TokenService> logger)
     {
-        _jwtSettings = jwtSettingsOptions?.Value ?? throw new ArgumentNullException(nameof(jwtSettingsOptions));
+        _jwtSettings = jwtSettingsOptions.Value ?? throw new ArgumentNullException(nameof(jwtSettingsOptions));
         _tokenValidationParameters = JwtBearerOptionsSetup.CreateTokenValidationParameters(_jwtSettings);
         _userManager = userManager;
         _logger = logger;
@@ -44,7 +44,7 @@ public class TokenService : ITokenService
         {
             var claims = new List<Claim>
             {
-                new (ClaimTypes.NameIdentifier, user.Id),
+                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new (ClaimTypes.Email, user.Email!),
                 new (ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -282,7 +282,6 @@ public class TokenService : ITokenService
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_jwtSettings.Key);
 
             // Create a clone of the tokenValidationParameters but disable the lifetime validation
             var tokenValidationParameters = _tokenValidationParameters.Clone();
@@ -311,14 +310,14 @@ public class TokenService : ITokenService
     /// </summary>
     /// <param name="userId">A user id associated with a user instance</param>
     /// <returns>true if successfully revoked</returns>
-    public async Task<bool> RevokeTokenAsync(string userId)
+    public async Task<bool> RevokeTokenAsync(Guid userId)
     {
         try
         {
-            if (string.IsNullOrEmpty(userId))
+            if (userId == Guid.Empty)
                 throw new ArgumentNullException(nameof(userId));
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 return false;

@@ -46,10 +46,9 @@ public class DocumentRepository : IDocumentRepository
         try
         {
             if (userId == Guid.Empty) throw new ArgumentNullException(nameof(userId));
-            var userIdString = userId.ToString();
 
             return await _context.Documents
-                .Where(d => d.UserId == userIdString)
+                .Where(d => d.UserId == userId)
                 .OrderByDescending(d => d.CreatedAt)
                 .ToListAsync();
         }

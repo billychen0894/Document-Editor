@@ -241,7 +241,7 @@ public class AuthService : IAuthService
    /// </summary>
    /// <param name="userId"></param>
    /// <returns>true for logout success</returns>
-   public async Task<bool> LogoutAsync(string userId)
+   public async Task<bool> LogoutAsync(Guid userId)
    {
        try
        {
