@@ -1,12 +1,15 @@
 using CollabDocumentEditor.Core.Authorization;
 using CollabDocumentEditor.Core.Entities;
+using CollabDocumentEditor.Core.Enum;
+using CollabDocumentEditor.Core.Interfaces.Repositories;
 using CollabDocumentEditor.Core.Interfaces.Services;
 using CollabDocumentEditor.Core.Settings;
 using CollabDocumentEditor.Core.Validators.AuthValidators;
-using CollabDocumentEditor.Infrastructure.Authorization;
+using CollabDocumentEditor.Infrastructure.Authorization.Handlers;
 using CollabDocumentEditor.Infrastructure.Data;
 using CollabDocumentEditor.Infrastructure.Extensions;
 using CollabDocumentEditor.Infrastructure.Mapping;
+using CollabDocumentEditor.Infrastructure.Repositories;
 using CollabDocumentEditor.Infrastructure.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -33,7 +36,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         ));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
 {
     // Password settings
     options.Password.RequireDigit = true;
@@ -53,19 +56,27 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped<IAuthorizationHandler, DocumentOwnerHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, DocumentAuthorizationHandler>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<IDocumentPermissionRepository, DocumentPermissionRepository>();
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
     
-    options.AddPolicy("DocumentOwner", policy => policy.AddRequirements(new DocumentOwnerRequirement()));
+    options.AddPolicy("DocumentRole", policy =>
+    {
+        policy.Requirements.Add(new DocumentRoleRequirement(DocumentRole.Owner));
+        policy.Requirements.Add(new DocumentRoleRequirement(DocumentRole.Editor));
+        policy.Requirements.Add(new DocumentRoleRequirement(DocumentRole.Viewer));
+        policy.Requirements.Add(new DocumentRoleRequirement(DocumentRole.None));
+    });
 });
 
 builder.Services.AddEmailServices(builder.Configuration);
