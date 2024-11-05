@@ -136,7 +136,7 @@ public class DocumentPermissionRepository : IDocumentPermissionRepository
    /// <summary>
    /// Checks if a user has a specific permission on a document
    /// </summary>
-   public async Task<bool> HasPermissionAsync(Guid documentId, Guid userId, DocumentRole permission)
+   public async Task<bool> HasPermissionAsync(Guid documentId, Guid userId, DocumentRole role)
    {
       try
       {
@@ -149,7 +149,7 @@ public class DocumentPermissionRepository : IDocumentPermissionRepository
          
          // Check if user has the required permission
          var userPermission = await GetUserPermissionAsync(documentId, userId);
-         return userPermission is { RevokedAt: not null } && userPermission.Role <= permission;
+         return userPermission is { RevokedAt: not null } && userPermission.Role <= role;
       }
       catch (Exception ex)
       {

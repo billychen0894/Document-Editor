@@ -114,8 +114,6 @@ public class EmailService : IEmailService
          
          msg.AddTo(new EmailAddress(email));
          msg.SetClickTracking(false, false);
-
-         msg.SetClickTracking(false, false);
          msg.SetOpenTracking(false);
          msg.SetGoogleAnalytics(false);
          msg.SetSubscriptionTracking(false);
@@ -153,8 +151,6 @@ public class EmailService : IEmailService
          };
 
          msg.AddTo(new EmailAddress(email));
-         msg.SetClickTracking(false, false);
-
          msg.SetClickTracking(false, false);
          msg.SetOpenTracking(false);
          msg.SetGoogleAnalytics(false);

@@ -1,6 +1,6 @@
 using CollabDocumentEditor.Core.Enum;
 
-namespace CollabDocumentEditor.Core.Authorization;
+namespace CollabDocumentEditor.Core.Authorization.Requirements;
 
 public class DocumentRoleRequirement : DocumentRequirement
 {

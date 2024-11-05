@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using CollabDocumentEditor.Core.Authorization;
+using CollabDocumentEditor.Core.Authorization.Requirements;
 using CollabDocumentEditor.Core.Entities;
 using CollabDocumentEditor.Core.Enum;
 using CollabDocumentEditor.Core.Interfaces.Repositories;
