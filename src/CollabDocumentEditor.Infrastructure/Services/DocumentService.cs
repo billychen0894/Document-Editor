@@ -5,6 +5,7 @@ using CollabDocumentEditor.Core.Enum;
 using CollabDocumentEditor.Core.Exceptions;
 using CollabDocumentEditor.Core.Interfaces.Repositories;
 using CollabDocumentEditor.Core.Interfaces.Services;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using SendGrid.Helpers.Errors.Model;
 
@@ -17,19 +18,28 @@ public class DocumentService : IDocumentService
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
     private readonly IDocumentPermissionRepository _documentPermissionRepository;
+    private readonly IValidator<CreateDocumentDto> _createDocumentValidator;
+    private readonly IValidator<UpdateDocumentDto> _updateDocumentValidator;
+    private readonly IValidator<ShareDocumentDto> _shareDocumentValidator;
     
     public DocumentService(
         IDocumentRepository documentRepository,
         ILogger<DocumentService> logger,
         IMapper mapper,
         ICurrentUserService currentUserService,
-        IDocumentPermissionRepository documentPermissionRepository)
+        IDocumentPermissionRepository documentPermissionRepository,
+        IValidator<CreateDocumentDto> createDocumentValidator,
+        IValidator<UpdateDocumentDto> updateDocumentValidator,
+        IValidator<ShareDocumentDto> shareDocumentValidator)
     {
         _documentRepository = documentRepository ?? throw new ArgumentNullException(nameof(documentRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
         _documentPermissionRepository = documentPermissionRepository ?? throw new ArgumentNullException(nameof(documentPermissionRepository));
+        _createDocumentValidator = createDocumentValidator ?? throw new ArgumentNullException(nameof(createDocumentValidator));
+        _updateDocumentValidator = updateDocumentValidator ?? throw new ArgumentNullException(nameof(updateDocumentValidator));
+        _shareDocumentValidator = shareDocumentValidator ?? throw new ArgumentNullException(nameof(shareDocumentValidator));
     }
 
     public async Task<DocumentDto> GetDocumentAsync(Guid documentId)
@@ -119,6 +129,13 @@ public class DocumentService : IDocumentService
     {
         try
         {
+            var validationResult = await _createDocumentValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                _logger.LogError("Validation failed while creating document {Document}", dto);
+                throw new ValidationException(validationResult.Errors);
+            }
+            
             var document = _mapper.Map<Document>(dto);
             document.UserId = _currentUserService.UserId;
 
@@ -158,6 +175,13 @@ public class DocumentService : IDocumentService
     {
         try
         {
+            var validationResult = await _updateDocumentValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                _logger.LogError("Validation failed while updating document {Document}", dto);
+                throw new ValidationException(validationResult.Errors);
+            }
+            
             var existingDocument = await _documentRepository.GetByIdAsync(dto.Id);
 
             var authorizedResult = await _documentPermissionRepository.HasPermissionAsync(
@@ -229,17 +253,29 @@ public class DocumentService : IDocumentService
         }
     }
 
+    /// <summary>
+    /// Share a document with another user (only document owner can share)
+    /// </summary>
+    /// <param name="shareDocumentDto"></param>
+    /// <exception cref="UnauthorizedAccessException"></exception>
     public async Task ShareDocumentAsync(ShareDocumentDto shareDocumentDto)
     {
         try
         {
+            var validationResult = await _shareDocumentValidator.ValidateAsync(shareDocumentDto);
+            if (!validationResult.IsValid)
+            {
+                _logger.LogError("Validation failed while sharing document {Document}", shareDocumentDto);
+                throw new ValidationException(validationResult.Errors);
+            }
+            
             var document = await _documentRepository.GetByIdAsync(shareDocumentDto.DocumentId);
 
             // Check if current user can manage permissions
             var authorizedResult = await _documentPermissionRepository.HasPermissionAsync(
                 document.Id,
                 _currentUserService.UserId,
-                DocumentRole.Viewer);
+                DocumentRole.Owner);
 
             if (!authorizedResult)
             {

@@ -1,7 +1,7 @@
 using CollabDocumentEditor.Core.Dtos;
 using FluentValidation;
 
-namespace CollabDocumentEditor.Core.Validators;
+namespace CollabDocumentEditor.Core.Validators.DocumentValidators;
 
 public class UpdateDocumentValidator : AbstractValidator<UpdateDocumentDto>
 {
