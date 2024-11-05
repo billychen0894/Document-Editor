@@ -9,4 +9,5 @@ public interface IDocumentService
    Task<DocumentDto> CreateDocumentAsync(CreateDocumentDto dto);
    Task<DocumentDto> UpdateDocumentAsync(UpdateDocumentDto dto);
    Task DeleteDocumentAsync(Guid documentId);
+   Task ShareDocumentAsync(ShareDocumentDto dto);
 }

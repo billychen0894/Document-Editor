@@ -1,12 +1,10 @@
-using System.Security.Claims;
 using AutoMapper;
 using CollabDocumentEditor.Core.Dtos;
 using CollabDocumentEditor.Core.Entities;
+using CollabDocumentEditor.Core.Enum;
 using CollabDocumentEditor.Core.Exceptions;
 using CollabDocumentEditor.Core.Interfaces.Repositories;
 using CollabDocumentEditor.Core.Interfaces.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SendGrid.Helpers.Errors.Model;
 
@@ -18,17 +16,20 @@ public class DocumentService : IDocumentService
     private readonly ILogger<DocumentService> _logger;
     private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IDocumentPermissionRepository _documentPermissionRepository;
     
-    public DocumentService(IDocumentRepository documentRepository, ILogger<DocumentService> logger, IMapper mapper, ICurrentUserService currentUserService, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+    public DocumentService(
+        IDocumentRepository documentRepository,
+        ILogger<DocumentService> logger,
+        IMapper mapper,
+        ICurrentUserService currentUserService,
+        IDocumentPermissionRepository documentPermissionRepository)
     {
         _documentRepository = documentRepository ?? throw new ArgumentNullException(nameof(documentRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
-        _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
-        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        _documentPermissionRepository = documentPermissionRepository ?? throw new ArgumentNullException(nameof(documentPermissionRepository));
     }
 
     public async Task<DocumentDto> GetDocumentAsync(Guid documentId)
@@ -41,19 +42,17 @@ public class DocumentService : IDocumentService
                 throw new NotFoundException($"Document with id {documentId} not found");
             }
 
-            var authResult = await _authorizationService.AuthorizeAsync(
-                    _httpContextAccessor.HttpContext?.User ?? throw new InvalidOperationException("You are not authorized to access this resource"),
-                    document,
-                    "DocumentOwner");
+            var authorizedResult = await _documentPermissionRepository.HasPermissionAsync(
+                documentId,
+                _currentUserService.UserId,
+                DocumentRole.Viewer);
 
-            if (!authResult.Succeeded)
+            if (!authorizedResult)
             {
-                _logger.LogWarning("User {UserId} attempted unauthorized access to document {DocumentId}",
-                    _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    documentId);
-                throw new UnauthorizedAccessException("You don't have permission to access this document");
+               _logger.LogError("You do not have permission to access this document"); 
+               throw new UnauthorizedAccessException("You do not have permission to access this document");
             }
-            
+
             _logger.LogInformation("User {UserName} ({UserId}) retrieved document {DocumentId}",
                 _currentUserService.UserName,
                 _currentUserService.UserId,
@@ -121,7 +120,7 @@ public class DocumentService : IDocumentService
         try
         {
             var document = _mapper.Map<Document>(dto);
-            document.UserId = _currentUserService.UserId.ToString();
+            document.UserId = _currentUserService.UserId;
 
             var createdDocument = await _documentRepository.CreateAsync(document);
 
@@ -161,17 +160,15 @@ public class DocumentService : IDocumentService
         {
             var existingDocument = await _documentRepository.GetByIdAsync(dto.Id);
 
-            var authResult = await _authorizationService.AuthorizeAsync(
-                    _httpContextAccessor.HttpContext?.User ?? throw new InvalidOperationException("You are not authorized to access this resource"),
-                    existingDocument,
-                    "DocumentOwner");
+            var authorizedResult = await _documentPermissionRepository.HasPermissionAsync(
+                existingDocument.Id,
+                _currentUserService.UserId,
+                DocumentRole.Editor);
 
-            if (!authResult.Succeeded)
+            if (!authorizedResult)
             {
-                _logger.LogWarning("User {UserId} attempted unauthorized access to document {DocumentId}",
-                    _currentUserService.UserId,
-                    existingDocument);
-                throw new UnauthorizedAccessException("You don't have permission to access this document");
+               _logger.LogError("You do not have permission to update this document"); 
+               throw new UnauthorizedAccessException("You do not have permission to update this document");
             }
             
             var documentWithUpdates = _mapper.Map<Document>(dto);
@@ -204,17 +201,15 @@ public class DocumentService : IDocumentService
         {
             var document = await _documentRepository.GetByIdAsync(documentId);
 
-            var authResult = await _authorizationService.AuthorizeAsync(
-                    _httpContextAccessor.HttpContext?.User ?? throw new InvalidOperationException("You are not authorized to access this resource"),
-                    document,
-                    "DocumentOwner");
+            var authorizedResult = await _documentPermissionRepository.HasPermissionAsync(
+                document.Id,
+                _currentUserService.UserId,
+                DocumentRole.Owner);
 
-            if (!authResult.Succeeded)
+            if (!authorizedResult)
             {
-                _logger.LogWarning("User {UserId} attempted unauthorized access to document {DocumentId}",
-                    _currentUserService.UserId,
-                    document);
-                throw new UnauthorizedAccessException("You don't have permission to access this document");
+               _logger.LogError("You do not have permission to delete this document"); 
+               throw new UnauthorizedAccessException("You do not have permission to delete this document");
             }
             
             await _documentRepository.DeleteAsync(documentId);
@@ -230,6 +225,45 @@ public class DocumentService : IDocumentService
                 _currentUserService.UserName, 
                 _currentUserService.UserId, 
                 documentId);
+            throw; 
+        }
+    }
+
+    public async Task ShareDocumentAsync(ShareDocumentDto shareDocumentDto)
+    {
+        try
+        {
+            var document = await _documentRepository.GetByIdAsync(shareDocumentDto.DocumentId);
+
+            // Check if current user can manage permissions
+            var authorizedResult = await _documentPermissionRepository.HasPermissionAsync(
+                document.Id,
+                _currentUserService.UserId,
+                DocumentRole.Viewer);
+
+            if (!authorizedResult)
+            {
+               _logger.LogError("You do not have permission to share this document"); 
+               throw new UnauthorizedAccessException("You do not have permission to share this document");
+            }
+            
+            var permission = new DocumentUserPermission
+            {
+                DocumentId = shareDocumentDto.DocumentId,
+                UserId = shareDocumentDto.UserId,
+                Role = shareDocumentDto.Role,
+                GrantedAt = DateTime.UtcNow,
+                GrantedBy = _currentUserService.UserId
+            };
+
+            await _documentPermissionRepository.GrantPermissionAsync(permission);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while user {UserName} ({UserId}) was sharing document {DocumentId}", 
+                _currentUserService.UserName, 
+                _currentUserService.UserId, 
+                shareDocumentDto.DocumentId);
             throw; 
         }
     }
