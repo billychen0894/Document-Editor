@@ -1,4 +1,4 @@
-using CollabDocumentEditor.Core.Authorization;
+using CollabDocumentEditor.Core.Authorization.Requirements;
 using CollabDocumentEditor.Core.Entities;
 using CollabDocumentEditor.Core.Enum;
 using CollabDocumentEditor.Core.Interfaces.Repositories;
@@ -62,6 +62,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IDocumentPermissionRepository, DocumentPermissionRepository>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
