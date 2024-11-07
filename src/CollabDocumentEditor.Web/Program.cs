@@ -11,6 +11,7 @@ using CollabDocumentEditor.Infrastructure.Extensions;
 using CollabDocumentEditor.Infrastructure.Mapping;
 using CollabDocumentEditor.Infrastructure.Repositories;
 using CollabDocumentEditor.Infrastructure.Services;
+using CollabDocumentEditor.Web.Middleware;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -84,6 +85,8 @@ builder.Services.AddEmailServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -104,5 +107,6 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.Run();
