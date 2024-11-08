@@ -21,7 +21,7 @@ public class DocumentsController : ControllerBase
     
     [HttpGet("{documentId}", Name = "GetDocument")]
     [Authorize(Policy = "DocumentRole")]
-    public async Task<IActionResult> GetDocumentAsync(Guid documentId)
+    public async Task<IActionResult> GetDocument(Guid documentId)
     {
         if (documentId == Guid.Empty)
         {
@@ -34,7 +34,7 @@ public class DocumentsController : ControllerBase
 
     [HttpGet("user/{userId}")]
     [Authorize(Policy="DocumentRole")]
-    public async Task<IActionResult> GetUserDocumentsAsync(Guid userId)
+    public async Task<IActionResult> GetUserDocuments(Guid userId)
     {
         if (userId == Guid.Empty)
         {
@@ -47,7 +47,7 @@ public class DocumentsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "DocumentRole")]
-    public async Task<IActionResult> CreateDocumentAsync([FromBody] CreateDocumentDto dto)
+    public async Task<IActionResult> CreateDocument([FromBody] CreateDocumentDto dto)
     {
         var document = await _documentService.CreateDocumentAsync(dto);
         
@@ -62,7 +62,7 @@ public class DocumentsController : ControllerBase
     
     [HttpPut("{documentId}")]
     [Authorize(Policy="DocumentRole")]
-    public async Task<IActionResult> UpdateDocumentAsync(Guid documentId, [FromBody] UpdateDocumentDto dto)
+    public async Task<IActionResult> UpdateDocument(Guid documentId, [FromBody] UpdateDocumentDto dto)
     {
         if (documentId == Guid.Empty)
         {
@@ -83,7 +83,7 @@ public class DocumentsController : ControllerBase
     
     [HttpDelete("{documentId}")]
     [Authorize(Policy="DocumentRole")]
-    public async Task<IActionResult> DeleteDocumentAsync(Guid documentId)
+    public async Task<IActionResult> DeleteDocument(Guid documentId)
     {
         if(documentId == Guid.Empty)
         {
@@ -98,7 +98,7 @@ public class DocumentsController : ControllerBase
     
     [HttpPost("share")]
     [Authorize(Policy="DocumentRole")]
-    public async Task<IActionResult> ShareDocumentAsync([FromBody] ShareDocumentDto dto)
+    public async Task<IActionResult> ShareDocument([FromBody] ShareDocumentDto dto)
     {
         await _documentService.ShareDocumentAsync(dto);
         
