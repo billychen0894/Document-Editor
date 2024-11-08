@@ -1,4 +1,3 @@
-using CollabDocumentEditor.Core.Common;
 using CollabDocumentEditor.Core.Dtos;
 using CollabDocumentEditor.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
