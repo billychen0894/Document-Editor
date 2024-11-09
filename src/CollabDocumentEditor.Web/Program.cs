@@ -8,12 +8,15 @@ using CollabDocumentEditor.Core.Validators.AuthValidators;
 using CollabDocumentEditor.Infrastructure.Authorization.Handlers;
 using CollabDocumentEditor.Infrastructure.Data;
 using CollabDocumentEditor.Infrastructure.Extensions;
+using CollabDocumentEditor.Infrastructure.HealthChecks;
 using CollabDocumentEditor.Infrastructure.Mapping;
 using CollabDocumentEditor.Infrastructure.Repositories;
 using CollabDocumentEditor.Infrastructure.Services;
+using CollabDocumentEditor.Web.HealthChecks;
 using CollabDocumentEditor.Web.Middleware;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -125,6 +128,24 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+var frontendUrl = builder.Configuration["FrontendUrl"] ?? "http://localhost:3000";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowedOrigins",
+        corsPolicyBuilder =>
+        {
+            corsPolicyBuilder.WithOrigins(frontendUrl)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        });
+});
+
+builder.Services.AddHealthChecks()
+    .AddCheck<SendGridHealthCheck>("sendgrid_health_check", tags: new[] { "email" })
+    .AddDbContextCheck<ApplicationDbContext>("database_health_check", tags: new[] { "database" });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -150,5 +171,27 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.MapControllers();
+app.UseCors("AllowedOrigins");
+
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = HealthCheckResponseWriter.WriteResponse,
+    // Optional: only show specific tags
+    Predicate = _ => true
+});
+
+// Endpoint for email service checks only
+app.MapHealthChecks("/health/email", new HealthCheckOptions
+{
+    Predicate = reg => reg.Tags.Contains("email"),
+    ResponseWriter = HealthCheckResponseWriter.WriteResponse 
+});
+
+// Endpoint for database checks only
+app.MapHealthChecks("/health/database", new HealthCheckOptions
+{
+    Predicate = reg => reg.Tags.Contains("database"),
+    ResponseWriter = HealthCheckResponseWriter.WriteResponse
+});
 
 app.Run();
