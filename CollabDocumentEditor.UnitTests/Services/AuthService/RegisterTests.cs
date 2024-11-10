@@ -10,7 +10,7 @@ using Moq;
 
 namespace CollabDocumentEditor.UnitTests.Services.Auth;
 
-public class AuthServiceRegisterTests : AuthServiceTestsBase
+public class RegisterTests : AuthServiceTestsBase
 {
     [Fact]
     public async Task RegisterAsync_WithValidInput_ReturnsSuccessResult()

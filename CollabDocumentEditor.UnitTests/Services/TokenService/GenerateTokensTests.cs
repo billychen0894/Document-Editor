@@ -5,7 +5,7 @@ using CollabDocumentEditor.UnitTests.Builders;
 
 namespace CollabDocumentEditor.UnitTests.Services.Token;
 
-public class TokenServiceGenerateTokensTests : TokenServiceTestsBase
+public class GenerateTokensTests : TokenServiceTestsBase
 {
    [Fact]
    public void GenerateAccessToken_WithValidUser_ReturnsValidToken()
