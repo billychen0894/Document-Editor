@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollabDocumentEditor.Core",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollabDocumentEditor.Infrastructure", "src\CollabDocumentEditor.Infrastructure\CollabDocumentEditor.Infrastructure.csproj", "{C99328D9-4CF6-441C-B26B-9A0DCB78E4B3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F9A090B0-E686-4917-B249-A7813C8AF030}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollabDocumentEditor.UnitTests", "CollabDocumentEditor.UnitTests\CollabDocumentEditor.UnitTests.csproj", "{73182D82-FF47-4D74-A707-4D4E15948DCE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,10 +36,15 @@ Global
 		{C99328D9-4CF6-441C-B26B-9A0DCB78E4B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C99328D9-4CF6-441C-B26B-9A0DCB78E4B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C99328D9-4CF6-441C-B26B-9A0DCB78E4B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73182D82-FF47-4D74-A707-4D4E15948DCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73182D82-FF47-4D74-A707-4D4E15948DCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73182D82-FF47-4D74-A707-4D4E15948DCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73182D82-FF47-4D74-A707-4D4E15948DCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{186DF5B1-5A5C-4E27-BFA2-ACE41B35B1C5} = {21BD6EDF-D091-4D41-B99E-36297D92FFAB}
 		{91963E98-FDA8-45BA-AC5B-DAB69D013534} = {21BD6EDF-D091-4D41-B99E-36297D92FFAB}
 		{C99328D9-4CF6-441C-B26B-9A0DCB78E4B3} = {21BD6EDF-D091-4D41-B99E-36297D92FFAB}
+		{73182D82-FF47-4D74-A707-4D4E15948DCE} = {F9A090B0-E686-4917-B249-A7813C8AF030}
 	EndGlobalSection
 EndGlobal
