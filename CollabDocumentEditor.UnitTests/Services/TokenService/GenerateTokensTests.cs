@@ -3,7 +3,7 @@ using System.Security.Claims;
 using CollabDocumentEditor.UnitTests.Base;
 using CollabDocumentEditor.UnitTests.Builders;
 
-namespace CollabDocumentEditor.UnitTests.Services.Token;
+namespace CollabDocumentEditor.UnitTests.Services.TokenService;
 
 public class GenerateTokensTests : TokenServiceTestsBase
 {

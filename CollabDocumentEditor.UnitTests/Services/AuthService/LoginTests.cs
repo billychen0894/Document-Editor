@@ -8,7 +8,7 @@ using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace CollabDocumentEditor.UnitTests.Services.Auth;
+namespace CollabDocumentEditor.UnitTests.Services.AuthService;
 
 public class LoginTests : AuthServiceTestsBase
 {
