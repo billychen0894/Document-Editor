@@ -15,7 +15,9 @@ public class ApplicationUserBuilder
             Email = TestConstants.AuthConstants.ValidEmail,
             UserName = TestConstants.AuthConstants.ValidEmail,
             FirstName = TestConstants.AuthConstants.ValidFirstName,
-            LastName = TestConstants.AuthConstants.ValidLastName
+            LastName = TestConstants.AuthConstants.ValidLastName,
+            RefreshToken = TestConstants.AuthConstants.ValidRefreshToken,
+            RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7)
         };
     }
     
