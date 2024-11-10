@@ -24,8 +24,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\CollabDocumentEditor.Core\CollabDocumentEditor.Core.csproj" />
       <ProjectReference Include="..\..\src\CollabDocumentEditor.Infrastructure\CollabDocumentEditor.Infrastructure.csproj" />
-      <ProjectReference Include="..\src\CollabDocumentEditor.Core\CollabDocumentEditor.Core.csproj" />
-      <ProjectReference Include="..\src\CollabDocumentEditor.Infrastructure\CollabDocumentEditor.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\src\CollabDocumentEditor.Web\CollabDocumentEditor.Web.csproj" />
     </ItemGroup>
 
 </Project>
