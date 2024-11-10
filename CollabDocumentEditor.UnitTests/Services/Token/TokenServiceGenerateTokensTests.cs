@@ -5,7 +5,7 @@ using CollabDocumentEditor.UnitTests.Builders;
 
 namespace CollabDocumentEditor.UnitTests.Services.Token;
 
-public class TokenServiceGenerateAccessTokenTests : TokenServiceTestsBase
+public class TokenServiceGenerateTokensTests : TokenServiceTestsBase
 {
    [Fact]
    public void GenerateAccessToken_WithValidUser_ReturnsValidToken()
@@ -26,6 +26,17 @@ public class TokenServiceGenerateAccessTokenTests : TokenServiceTestsBase
       Assert.Equal(JwtSettings.Audience, jsonToken.Audiences.First());
       Assert.Contains(jsonToken.Claims, c => c.Type == ClaimTypes.Email && c.Value == user.Email);
       Assert.Contains(jsonToken.Claims, c => c.Type == ClaimTypes.NameIdentifier && c.Value == user.Id.ToString());
+   }
+
+   [Fact]
+   public void GenerateRefreshToken_ReturnsValidToken()
+   {
+      // Act
+      var refreshToken = TokenService.GenerateRefreshToken();
+
+      // Assert
+      Assert.NotNull(refreshToken);
+      Assert.True(refreshToken.Length > 32); // Base64 encoded 32 bytes
    }
    
 }
