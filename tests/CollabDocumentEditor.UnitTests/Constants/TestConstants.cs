@@ -21,4 +21,15 @@ public class TestConstants
         public const string ValidAudience = "valid_audience";
         public const int ValidLifetime = 3600;
     }
+
+    public static class EmailConstants
+    {
+        public const string ValidSendGridApiKey = "valid_sendgrid_api_key";
+        public const string ValidFromEmail = "test@example.com";
+        public const string ValidFromName = "Test";
+        public const int ValidRetryCount = 3;
+        public const int ValidRetryDelayMilliseconds = 1000;
+        public const bool ValidSandboxMode = false;
+        public const string ValidHost = "example.com";
+    }
 }

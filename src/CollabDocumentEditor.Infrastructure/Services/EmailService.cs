@@ -13,9 +13,9 @@ public class EmailService : IEmailService
 {
    private readonly EmailSettings _emailSettings;
    private readonly ILogger<EmailService> _logger;
-   private readonly SendGridClient _sendGridClient;
+   private readonly ISendGridClientWrapper _sendGridClient;
    
-   public EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger, SendGridClient sendGridClient)
+   public EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger, ISendGridClientWrapper sendGridClient)
    {
       _sendGridClient = sendGridClient ?? throw new ArgumentNullException(nameof(sendGridClient));
       _emailSettings = emailSettings.Value ?? throw new ArgumentNullException(nameof(emailSettings));

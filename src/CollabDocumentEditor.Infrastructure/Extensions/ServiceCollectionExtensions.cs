@@ -77,6 +77,7 @@ public static class ServiceCollectionExtensions
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.AddSingleton(new SendGridClient(sendGridClientOptions));
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ISendGridClientWrapper, SendGridClientWrapper>();
         
         return services;
     }
