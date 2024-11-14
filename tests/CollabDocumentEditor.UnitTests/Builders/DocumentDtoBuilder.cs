@@ -30,5 +30,17 @@ public class DocumentDtoBuilder
         return this;
     }
     
+    public DocumentDtoBuilder WithTitle(string title)
+    {
+        _documentDto.Title = title;
+        return this;
+    }
+    
+    public DocumentDtoBuilder WithContent(string content)
+    {
+        _documentDto.Content = content;
+        return this;
+    }
+    
     public DocumentDto Build() => _documentDto;
 }
