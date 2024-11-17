@@ -56,6 +56,6 @@ public class RegisterTests : AuthControllerTestsBase
         var result = await AuthControllerMock.Register(registerDto);
 
         // Assert
-        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.IsType<BadRequestObjectResult>(result);
     } 
 }
